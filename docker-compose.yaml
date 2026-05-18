@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db-praktikum:
+    image: postgres:latest
+    container_name: DB
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: praktikum_user
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: praktikum_db
+    volumes:
+      # UBAH BAGIAN INI: Target internal diganti ke /var/lib/postgresql
+      - pgdata-terbaru:/var/lib/postgresql
+    networks:
+      - praktikum-network
+
+  app-pertemuan11:
+    build: .
+    container_name: pertemuan11-container
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-praktikum:5432/praktikum_db
+      SPRING_DATASOURCE_USERNAME: praktikum_user
+      SPRING_DATASOURCE_PASSWORD: 12345
+    depends_on:
+      - db-praktikum
+    networks:
+      - praktikum-network
+
+volumes:
+  # Kita buat nama volume yang benar-benar gres di sini
+  pgdata-terbaru:
+
+networks:
+  praktikum-network:
+    driver: bridge
